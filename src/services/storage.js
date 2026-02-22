@@ -16,6 +16,11 @@ export const STORAGE_KEYS = {
   STUDENTS: 'cadence_students',        // Array of all students
   LESSONS: 'cadence_lessons',          // Array of all lessons
   DARK_MODE: 'cadence_dark_mode',      // Is dark mode on?
+
+  // Billing system (Phase 1)
+  INVOICES: 'cadence_invoices',        // Array of all invoices
+  PAYMENTS: 'cadence_payments',        // Array of all payment records
+  BILLING_SETTINGS: 'cadence_billing_settings', // Studio billing preferences
 };
 
 /**

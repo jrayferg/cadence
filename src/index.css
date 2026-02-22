@@ -140,4 +140,36 @@ h1, h2, h3, h4, h5, h6 {
     border: 1px solid #d6d3d1 !important;
     page-break-inside: avoid;
   }
+
+  /* Billing print styles */
+  .billing-tab-bar,
+  .billing-filters,
+  [role="tablist"] {
+    display: none !important;
+  }
+
+  table {
+    width: 100% !important;
+    border-collapse: collapse;
+  }
+
+  table th,
+  table td {
+    border: 1px solid #d6d3d1;
+    padding: 6px 10px;
+  }
+
+  .invoice-preview {
+    page-break-inside: avoid;
+  }
+}
+
+/* Fade-in animation used across the app */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.2s ease-out;
 }

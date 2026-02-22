@@ -1,6 +1,6 @@
 /**
  * icons/index.jsx
- * All 14 icon components used throughout the app.
+ * All icon components used throughout the app (22 total).
  * Each is a simple SVG wrapped in a React component.
  *
  * Usage: import { Calendar, Users, Plus } from '@/components/icons';
@@ -113,5 +113,68 @@ export const Menu = ({ className = "w-6 h-6" }) => (
     <line x1="3" y1="6" x2="21" y2="6" strokeWidth="2" strokeLinecap="round"></line>
     <line x1="3" y1="12" x2="21" y2="12" strokeWidth="2" strokeLinecap="round"></line>
     <line x1="3" y1="18" x2="21" y2="18" strokeWidth="2" strokeLinecap="round"></line>
+  </svg>
+);
+
+// ── Billing icons (Phase 7) ─────────────────────────────────────────
+
+export const FileText = ({ className = "w-6 h-6" }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+    <polyline points="14 2 14 8 20 8"></polyline>
+    <line x1="16" y1="13" x2="8" y2="13"></line>
+    <line x1="16" y1="17" x2="8" y2="17"></line>
+    <polyline points="10 9 9 9 8 9"></polyline>
+  </svg>
+);
+
+export const CreditCard = ({ className = "w-6 h-6" }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+    <line x1="1" y1="10" x2="23" y2="10"></line>
+  </svg>
+);
+
+export const BarChart = ({ className = "w-6 h-6" }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <line x1="12" y1="20" x2="12" y2="10"></line>
+    <line x1="18" y1="20" x2="18" y2="4"></line>
+    <line x1="6" y1="20" x2="6" y2="16"></line>
+  </svg>
+);
+
+export const AlertTriangle = ({ className = "w-6 h-6" }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+    <line x1="12" y1="9" x2="12" y2="13"></line>
+    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+  </svg>
+);
+
+export const Download = ({ className = "w-6 h-6" }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+    <polyline points="7 10 12 15 17 10"></polyline>
+    <line x1="12" y1="15" x2="12" y2="3"></line>
+  </svg>
+);
+
+export const Mail = ({ className = "w-6 h-6" }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+    <polyline points="22,6 12,13 2,6"></polyline>
+  </svg>
+);
+
+export const Filter = ({ className = "w-6 h-6" }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+  </svg>
+);
+
+export const Clock = ({ className = "w-6 h-6" }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="10"></circle>
+    <polyline points="12 6 12 12 16 14"></polyline>
   </svg>
 );

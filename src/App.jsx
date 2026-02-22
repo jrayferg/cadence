@@ -79,7 +79,12 @@ function CadenceApp() {
             <StudentsView students={students} lessons={lessons} setStudents={setStudents} user={user} />
           )}
           {currentView === 'billing' && (
-            <BillingView lessons={lessons} students={students} />
+            <BillingView
+              lessons={lessons}
+              students={students}
+              setStudents={setStudents}
+              user={user}
+            />
           )}
         </main>
       </div>
