@@ -113,7 +113,7 @@ export default function DateInput({
     }
   };
 
-  /** When user picks from native calendar, populate the masked input */
+  /** When user picks from native calendar, populate the masked input and dismiss */
   const handleDatePicker = (e) => {
     const val = e.target.value; // YYYY-MM-DD
     if (val) {
@@ -123,6 +123,8 @@ export default function DateInput({
       onChange(val);
       setError('');
     }
+    // Blur the hidden input to dismiss the native picker
+    datePickerRef.current?.blur?.();
   };
 
   const currentYear = new Date().getFullYear();
@@ -138,6 +140,14 @@ export default function DateInput({
         </label>
       )}
       <div className="relative">
+        <button
+          type="button"
+          onClick={() => datePickerRef.current?.showPicker?.()}
+          className="absolute left-2.5 top-1/2 -translate-y-1/2 text-stone-400 dark:text-stone-500 hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
+          tabIndex={-1}
+        >
+          <Calendar className="w-4 h-4" />
+        </button>
         <input
           type="text"
           inputMode="numeric"
@@ -145,16 +155,8 @@ export default function DateInput({
           onChange={handleInput}
           placeholder="MM / DD / YYYY"
           required={required}
-          className={`w-full px-3 py-2 pr-9 ${inputBg} border ${borderClass} text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 transition-colors text-sm`}
+          className={`w-full pl-9 pr-3 py-2 ${inputBg} border ${borderClass} text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 transition-colors text-sm`}
         />
-        <button
-          type="button"
-          onClick={() => datePickerRef.current?.showPicker?.()}
-          className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-400 dark:text-stone-500 hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
-          tabIndex={-1}
-        >
-          <Calendar className="w-4 h-4" />
-        </button>
         {/* Hidden native date picker — opened by the calendar icon */}
         <input
           ref={datePickerRef}
@@ -162,6 +164,7 @@ export default function DateInput({
           className="sr-only"
           value={value || ''}
           onChange={handleDatePicker}
+          onBlur={() => datePickerRef.current?.blur?.()}
           min="1920-01-01"
           max={`${currentYear}-12-31`}
           tabIndex={-1}
