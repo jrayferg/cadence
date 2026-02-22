@@ -15,6 +15,7 @@ import { formatCurrency } from '@/utils/formatCurrency';
 
 /** Color mapping for invoice statuses */
 const STATUS_STYLES = {
+  draft:   'bg-stone-200 text-stone-700 dark:bg-stone-600 dark:text-stone-200',
   paid:    'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300',
   unpaid:  'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300',
   partial: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300',

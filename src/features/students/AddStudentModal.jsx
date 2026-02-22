@@ -52,8 +52,9 @@ import { X } from '@/components/icons';
         // Billing Model
         billingModel: 'per-lesson',
         monthlyRate: '',
-        courseFee: '',
-        coursePaid: false,
+
+        // Stripe (future - not shown in UI)
+        stripeCustomerId: '',
       };
       const [formData, setFormData] = useState(student ? { ...defaults, ...student } : defaults);
 
@@ -478,8 +479,7 @@ import { X } from '@/components/icons';
                         className="w-full px-4 py-3 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
                       >
                         <option value="per-lesson">Per Lesson — charge based on number of lessons</option>
-                        <option value="monthly">Monthly Subscription — flat monthly fee</option>
-                        <option value="per-course">Per Course — flat fee for entire course</option>
+                        <option value="monthly">Monthly — flat monthly fee</option>
                       </select>
                     </div>
 
@@ -503,36 +503,6 @@ import { X } from '@/components/icons';
                       </div>
                     )}
 
-                    {/* Per-course-specific fields */}
-                    {formData.billingModel === 'per-course' && (
-                      <div className="space-y-3">
-                        <div>
-                          <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
-                            Course Fee
-                          </label>
-                          <div className="relative">
-                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-500 dark:text-stone-400">$</span>
-                            <input
-                              type="number"
-                              value={formData.courseFee}
-                              onChange={(e) => setFormData({ ...formData, courseFee: e.target.value })}
-                              placeholder="500"
-                              className="w-full pl-8 pr-4 py-3 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
-                            />
-                          </div>
-                          <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">One-time fee for the entire course</p>
-                        </div>
-                        <label className="flex items-center gap-3 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={formData.coursePaid || false}
-                            onChange={(e) => setFormData({ ...formData, coursePaid: e.target.checked })}
-                            className="w-5 h-5 accent-teal-700"
-                          />
-                          <span className="text-sm text-stone-700 dark:text-stone-300">Course fee has been paid</span>
-                        </label>
-                      </div>
-                    )}
                   </div>
                 </div>
               </form>

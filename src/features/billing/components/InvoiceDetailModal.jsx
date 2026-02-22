@@ -12,10 +12,11 @@
  */
 
 import { formatCurrency } from '@/utils/formatCurrency';
-import { voidInvoice } from '@/services/billingService';
+import { voidInvoice, finalizeInvoice } from '@/services/billingService';
 import { X } from '@/components/icons';
 
 const STATUS_STYLES = {
+  draft:   'bg-stone-200 text-stone-700 dark:bg-stone-600 dark:text-stone-200',
   paid:    'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300',
   unpaid:  'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300',
   partial: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300',
@@ -25,8 +26,7 @@ const STATUS_STYLES = {
 
 const BILLING_MODEL_LABELS = {
   'per-lesson': 'Per Lesson',
-  'monthly': 'Monthly Subscription',
-  'per-course': 'Per Course',
+  'monthly': 'Monthly',
 };
 
 function InvoiceDetailModal({ invoice, student, payments, invoices, setInvoices, onClose, onPrint, onRecordPayment }) {
@@ -41,6 +41,10 @@ function InvoiceDetailModal({ invoice, student, payments, invoices, setInvoices,
       setInvoices(voidInvoice(invoices, invoice.id));
       onClose();
     }
+  };
+
+  const handleFinalize = () => {
+    setInvoices(finalizeInvoice(invoices, invoice.id));
   };
 
   return (
@@ -180,12 +184,20 @@ function InvoiceDetailModal({ invoice, student, payments, invoices, setInvoices,
         {/* Footer Actions */}
         <div className="flex flex-wrap items-center justify-between gap-3 px-6 py-4 border-t border-stone-200 dark:border-stone-700">
           <div className="flex gap-2">
-            {invoice.status !== 'void' && invoice.status !== 'paid' && (
+            {invoice.status !== 'void' && invoice.status !== 'paid' && invoice.status !== 'draft' && (
               <button
                 onClick={handleVoid}
                 className="px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
               >
                 Void Invoice
+              </button>
+            )}
+            {invoice.status === 'draft' && (
+              <button
+                onClick={handleVoid}
+                className="px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+              >
+                Discard Draft
               </button>
             )}
           </div>
@@ -196,7 +208,15 @@ function InvoiceDetailModal({ invoice, student, payments, invoices, setInvoices,
             >
               Print
             </button>
-            {invoice.status !== 'void' && invoice.status !== 'paid' && (
+            {invoice.status === 'draft' && (
+              <button
+                onClick={handleFinalize}
+                className="px-4 py-2 bg-teal-700 hover:bg-teal-800 text-white text-sm font-medium rounded-lg transition-colors"
+              >
+                Finalize Invoice
+              </button>
+            )}
+            {invoice.status !== 'void' && invoice.status !== 'paid' && invoice.status !== 'draft' && (
               <button
                 onClick={() => onRecordPayment && onRecordPayment(invoice)}
                 className="px-4 py-2 bg-teal-700 hover:bg-teal-800 text-white text-sm font-medium rounded-lg transition-colors"

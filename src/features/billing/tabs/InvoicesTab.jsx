@@ -1,25 +1,29 @@
 /**
  * InvoicesTab.jsx
- * The Invoices tab — create, view, filter, and print invoices.
+ * The Invoices tab — generate, create, view, filter, and print invoices.
  *
  * Layout:
- *   - Top bar: status filter pills + "Create Invoice" button
+ *   - Top bar: status filter pills + "Generate Invoices" + "Manual Invoice" buttons
+ *   - Batch action bar (Finalize All Drafts when viewing drafts)
  *   - Invoice table (sortable, clickable rows)
- *   - Modals: CreateInvoiceModal, InvoiceDetailModal
+ *   - Modals: GenerateInvoicesModal, CreateInvoiceModal, InvoiceDetailModal
  *   - Print: opens InvoicePreview in a new window
  */
 
 import { useState, useMemo } from 'react';
-import { Plus } from '@/components/icons';
+import { Plus, FileText } from '@/components/icons';
+import { finalizeAllDrafts } from '@/services/billingService';
 
 import InvoiceTable from '../components/InvoiceTable';
 import CreateInvoiceModal from '../components/CreateInvoiceModal';
 import InvoiceDetailModal from '../components/InvoiceDetailModal';
+import GenerateInvoicesModal from '../components/GenerateInvoicesModal';
 import { printInvoice } from '../components/InvoicePreview';
 
 /** Filter pills for invoice status */
 const FILTERS = [
   { id: 'all', label: 'All' },
+  { id: 'draft', label: 'Draft' },
   { id: 'unpaid', label: 'Unpaid' },
   { id: 'partial', label: 'Partial' },
   { id: 'overdue', label: 'Overdue' },
@@ -40,8 +44,8 @@ function InvoicesTab({
 }) {
   const [statusFilter, setStatusFilter] = useState('all');
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showGenerateModal, setShowGenerateModal] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
-  const [showRecordPayment, setShowRecordPayment] = useState(false);
 
   // Filter invoices by status
   const filteredInvoices = useMemo(() => {
@@ -54,7 +58,7 @@ function InvoicesTab({
 
   // Count by status (for filter pill badges)
   const counts = useMemo(() => {
-    const c = { all: invoices.length, unpaid: 0, partial: 0, overdue: 0, paid: 0, void: 0 };
+    const c = { all: invoices.length, draft: 0, unpaid: 0, partial: 0, overdue: 0, paid: 0, void: 0 };
     invoices.forEach(inv => { c[inv.status] = (c[inv.status] || 0) + 1; });
     return c;
   }, [invoices]);
@@ -66,9 +70,17 @@ function InvoicesTab({
     printInvoice(invoice, student, user);
   };
 
+  const handleFinalizeAll = () => {
+    const draftCount = counts.draft;
+    if (draftCount === 0) return;
+    if (window.confirm(`Finalize all ${draftCount} draft invoice${draftCount !== 1 ? 's' : ''}? They will become active and payable.`)) {
+      setInvoices(finalizeAllDrafts(invoices));
+    }
+  };
+
   return (
     <div className="space-y-4">
-      {/* Top Bar: Filters + Create Button */}
+      {/* Top Bar: Filters + Buttons */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         {/* Status filter pills */}
         <div className="flex flex-wrap gap-2">
@@ -92,15 +104,39 @@ function InvoicesTab({
           ))}
         </div>
 
-        {/* Create Invoice button */}
-        <button
-          onClick={() => setShowCreateModal(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-teal-700 hover:bg-teal-800 text-white text-sm font-medium rounded-lg transition-colors self-start sm:self-center"
-        >
-          <Plus className="w-4 h-4" />
-          Create Invoice
-        </button>
+        {/* Action buttons */}
+        <div className="flex gap-2 self-start sm:self-center">
+          <button
+            onClick={() => setShowGenerateModal(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-teal-700 hover:bg-teal-800 text-white text-sm font-medium rounded-lg transition-colors"
+          >
+            <FileText className="w-4 h-4" />
+            Generate Invoices
+          </button>
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="flex items-center gap-2 px-4 py-2 border border-stone-300 dark:border-stone-600 text-stone-700 dark:text-stone-300 text-sm font-medium rounded-lg hover:bg-stone-50 dark:hover:bg-stone-700 transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            Manual Invoice
+          </button>
+        </div>
       </div>
+
+      {/* Batch action bar for drafts */}
+      {statusFilter === 'draft' && counts.draft > 0 && (
+        <div className="flex items-center justify-between bg-stone-50 dark:bg-stone-700/50 px-4 py-3 rounded-lg border border-stone-200 dark:border-stone-700">
+          <p className="text-sm text-stone-600 dark:text-stone-400">
+            <span className="font-semibold text-stone-900 dark:text-stone-100">{counts.draft}</span> draft invoice{counts.draft !== 1 ? 's' : ''} ready to finalize
+          </p>
+          <button
+            onClick={handleFinalizeAll}
+            className="px-4 py-1.5 bg-teal-700 hover:bg-teal-800 text-white text-sm font-medium rounded-lg transition-colors"
+          >
+            Finalize All
+          </button>
+        </div>
+      )}
 
       {/* Invoice Table */}
       <div className="bg-white dark:bg-stone-800 rounded-xl border border-stone-200 dark:border-stone-700 overflow-hidden transition-colors">
@@ -111,7 +147,21 @@ function InvoicesTab({
         />
       </div>
 
-      {/* Create Invoice Modal */}
+      {/* Generate Invoices Modal */}
+      {showGenerateModal && (
+        <GenerateInvoicesModal
+          students={students}
+          lessons={lessons}
+          invoices={invoices}
+          setInvoices={setInvoices}
+          billingSettings={billingSettings}
+          setBillingSettings={setBillingSettings}
+          user={user}
+          onClose={() => setShowGenerateModal(false)}
+        />
+      )}
+
+      {/* Manual Invoice Modal */}
       {showCreateModal && (
         <CreateInvoiceModal
           students={students}
@@ -136,7 +186,6 @@ function InvoicesTab({
           onPrint={handlePrint}
           onRecordPayment={(inv) => {
             setSelectedInvoice(null);
-            // We'll hook up the record payment modal in Phase 4
           }}
         />
       )}

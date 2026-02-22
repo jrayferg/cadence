@@ -21,6 +21,9 @@ export const STORAGE_KEYS = {
   INVOICES: 'cadence_invoices',        // Array of all invoices
   PAYMENTS: 'cadence_payments',        // Array of all payment records
   BILLING_SETTINGS: 'cadence_billing_settings', // Studio billing preferences
+
+  // Stripe integration (future)
+  STRIPE_CONFIG: 'cadence_stripe_config',     // Stripe account & connection settings
 };
 
 /**

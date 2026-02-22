@@ -168,11 +168,11 @@ function buildInvoiceHTML(invoice, student, user) {
 }
 
 function getStatusBg(status) {
-  const map = { paid: '#dcfce7', unpaid: '#dbeafe', partial: '#fef3c7', overdue: '#fee2e2', void: '#f5f5f4' };
+  const map = { draft: '#e7e5e4', paid: '#dcfce7', unpaid: '#dbeafe', partial: '#fef3c7', overdue: '#fee2e2', void: '#f5f5f4' };
   return map[status] || '#f5f5f4';
 }
 
 function getStatusColor(status) {
-  const map = { paid: '#166534', unpaid: '#1e40af', partial: '#92400e', overdue: '#991b1b', void: '#78716c' };
+  const map = { draft: '#44403c', paid: '#166534', unpaid: '#1e40af', partial: '#92400e', overdue: '#991b1b', void: '#78716c' };
   return map[status] || '#78716c';
 }

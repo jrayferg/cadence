@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { generateRecurringDates } from '@/utils/recurringDates';
 import { Calendar, X, Plus } from '@/components/icons';
+import BillingModelBadge from '@/features/billing/components/BillingModelBadge';
 
 // NOTE: AddStudentModal is still defined in App.jsx and has not yet been
 // extracted. Once it is extracted (e.g., to @/features/students/AddStudentModal),
@@ -226,6 +227,19 @@ function AddLessonModal({ slot, students, lessonTypes, onClose, onSave, setStude
                   </div>
                 )}
               </div>
+
+              {/* Billing Model Info (read-only context) */}
+              {selectedStudent && (
+                <div className="flex items-center gap-2 text-sm text-stone-500 dark:text-stone-400 -mt-2">
+                  <BillingModelBadge model={selectedStudent.billingModel || 'per-lesson'} />
+                  {selectedStudent.billingModel === 'monthly' && selectedStudent.monthlyRate && (
+                    <span>${selectedStudent.monthlyRate}/mo</span>
+                  )}
+                  {(selectedStudent.billingModel || 'per-lesson') === 'per-lesson' && (
+                    <span>${selectedStudent.customRate || formData.rate}/lesson</span>
+                  )}
+                </div>
+              )}
 
               {/* Date & Time */}
               <div className="grid grid-cols-2 gap-4">

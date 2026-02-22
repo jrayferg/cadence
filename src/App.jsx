@@ -13,6 +13,7 @@
 
 import { useState, useEffect } from 'react';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { migrateStudentBillingModels } from '@/services/billingService';
 
 // Layout components
 import Header from '@/components/layout/Header';
@@ -39,6 +40,12 @@ function CadenceApp() {
     const loader = document.getElementById('loading');
     if (loader) loader.style.display = 'none';
   }, []);
+
+  // One-time migration: convert per-course students to per-lesson
+  useEffect(() => {
+    const migrated = migrateStudentBillingModels(students);
+    if (migrated !== students) setStudents(migrated);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Apply dark mode to document
   useEffect(() => {

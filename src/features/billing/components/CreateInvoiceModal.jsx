@@ -1,12 +1,12 @@
 /**
  * CreateInvoiceModal.jsx
- * Modal form to create a new invoice.
+ * Modal form to manually create a new invoice.
  *
  * Features:
- *   - Student picker dropdown
- *   - Billing model selector (per-lesson / monthly / per-course)
+ *   - Student picker dropdown (auto-syncs billing model from student profile)
+ *   - Billing model selector (per-lesson / monthly)
  *   - Dynamic line items (add/remove rows)
- *   - Auto-populate from student's completed lessons
+ *   - Auto-populate from student's lessons in a date range
  *   - Discount + tax fields
  *   - Due date picker
  *   - Notes field
@@ -45,6 +45,39 @@ function CreateInvoiceModal({
   const subtotal = items.reduce((sum, item) => sum + (Number(item.quantity) || 0) * (Number(item.rate) || 0), 0);
   const total = subtotal - Number(discount) + Number(tax);
 
+  // Find the currently selected student object
+  const selectedStudent = studentId ? students.find(s => String(s.id) === String(studentId)) : null;
+
+  /**
+   * Handle student selection — auto-sync billing model and pre-fill items
+   * based on the student's billing profile.
+   */
+  const handleStudentChange = (newStudentId) => {
+    setStudentId(newStudentId);
+    if (newStudentId) {
+      const student = students.find(s => String(s.id) === String(newStudentId));
+      if (student) {
+        const model = student.billingModel || 'per-lesson';
+        setBillingModel(model);
+
+        if (model === 'monthly' && student.monthlyRate) {
+          // Pre-fill with flat monthly tuition line item
+          setItems([{
+            description: 'Monthly tuition',
+            quantity: 1,
+            rate: Number(student.monthlyRate),
+          }]);
+        } else {
+          // Reset to blank for per-lesson (user will use auto-fill or add manually)
+          setItems([{ ...BLANK_ITEM }]);
+        }
+      }
+    } else {
+      setBillingModel(billingSettings.defaultBillingModel);
+      setItems([{ ...BLANK_ITEM }]);
+    }
+  };
+
   /** Add a new blank line item */
   const addItem = () => setItems([...items, { ...BLANK_ITEM }]);
 
@@ -64,7 +97,9 @@ function CreateInvoiceModal({
   /** Auto-populate line items from completed lessons */
   const autoPopulate = () => {
     if (!studentId) return;
-    const lessonItems = buildItemsFromLessons(lessons, studentId);
+    // Convert to number for comparison since lesson.studentId is a number
+    const numId = Number(studentId);
+    const lessonItems = buildItemsFromLessons(lessons, numId);
     if (lessonItems.length > 0) {
       setItems(lessonItems.map(item => ({
         description: item.description,
@@ -79,8 +114,11 @@ function CreateInvoiceModal({
     if (!studentId) return;
     if (items.every(i => !i.description && !i.rate)) return;
 
+    // Convert studentId to number to match student.id type
+    const numericStudentId = Number(studentId);
+
     const result = createInvoice(invoices, billingSettings, {
-      studentId,
+      studentId: numericStudentId,
       billingModel,
       items,
       discount: Number(discount),
@@ -99,7 +137,7 @@ function CreateInvoiceModal({
       <div className="bg-white dark:bg-stone-800 rounded-2xl shadow-xl w-full max-w-2xl my-8 transition-colors">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-stone-200 dark:border-stone-700">
-          <h3 className="text-lg font-bold text-stone-900 dark:text-stone-100">Create Invoice</h3>
+          <h3 className="text-lg font-bold text-stone-900 dark:text-stone-100">Manual Invoice</h3>
           <button onClick={onClose} className="p-2 hover:bg-stone-100 dark:hover:bg-stone-700 rounded-lg transition-colors">
             <X className="w-5 h-5 text-stone-500 dark:text-stone-400" />
           </button>
@@ -113,7 +151,7 @@ function CreateInvoiceModal({
               <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">Student *</label>
               <select
                 value={studentId}
-                onChange={(e) => setStudentId(e.target.value)}
+                onChange={(e) => handleStudentChange(e.target.value)}
                 className="w-full px-3 py-2 bg-white dark:bg-stone-700 border border-stone-300 dark:border-stone-600 rounded-lg text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-teal-500"
               >
                 <option value="">Select student...</option>
@@ -121,6 +159,15 @@ function CreateInvoiceModal({
                   <option key={s.id} value={s.id}>{s.name}</option>
                 ))}
               </select>
+              {/* Show billing info when student is selected */}
+              {selectedStudent && (
+                <div className="mt-1.5 text-xs text-stone-500 dark:text-stone-400">
+                  {selectedStudent.billingModel === 'monthly'
+                    ? `Monthly — ${selectedStudent.monthlyRate ? `$${selectedStudent.monthlyRate}/mo` : 'no rate set'}`
+                    : `Per Lesson — ${selectedStudent.customRate ? `$${selectedStudent.customRate}` : 'default rate'}`
+                  }
+                </div>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">Billing Model</label>
@@ -130,14 +177,13 @@ function CreateInvoiceModal({
                 className="w-full px-3 py-2 bg-white dark:bg-stone-700 border border-stone-300 dark:border-stone-600 rounded-lg text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-teal-500"
               >
                 <option value="per-lesson">Per Lesson</option>
-                <option value="monthly">Monthly Subscription</option>
-                <option value="per-course">Per Course (Flat Fee)</option>
+                <option value="monthly">Monthly</option>
               </select>
             </div>
           </div>
 
           {/* Auto-populate button */}
-          {studentId && (
+          {studentId && billingModel === 'per-lesson' && (
             <button
               onClick={autoPopulate}
               className="text-sm text-teal-700 dark:text-teal-400 hover:text-teal-800 dark:hover:text-teal-300 font-medium transition-colors"
