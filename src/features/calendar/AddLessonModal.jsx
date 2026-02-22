@@ -2,11 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { generateRecurringDates } from '@/utils/recurringDates';
 import { Calendar, X, Plus } from '@/components/icons';
 import BillingModelBadge from '@/features/billing/components/BillingModelBadge';
-
-// NOTE: AddStudentModal is still defined in App.jsx and has not yet been
-// extracted. Once it is extracted (e.g., to @/features/students/AddStudentModal),
-// update the import below accordingly.
-// import AddStudentModal from '@/features/students/AddStudentModal';
+import AddStudentModal from '@/features/students/AddStudentModal';
 
 /**
  * AddLessonModal - A Google Calendar-style modal for scheduling new lessons.
