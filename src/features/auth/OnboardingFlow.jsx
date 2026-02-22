@@ -5,15 +5,13 @@
  *   Step 1 -- Name their studio / business.
  *   Step 2 -- Define lesson types with default durations and rates.
  *
- * On completion the user profile is updated, and if the account
- * belongs to a demo user (Jennaca) pre-populated sample data is loaded.
+ * On completion the user profile is updated and they enter the main app.
  */
 
 import { useState } from 'react';
 import { Music, ArrowRight, Plus, X, CheckCircle, ChevronLeft } from '@/components/icons';
-import { generateDemoData } from '@/utils/demoData';
 
-function OnboardingFlow({ user, setUser, setSetupComplete, setStudents, setLessons }) {
+function OnboardingFlow({ user, setUser, setSetupComplete }) {
   const [step, setStep] = useState(1);
   const [data, setData] = useState({
     businessName: '',
@@ -42,15 +40,6 @@ function OnboardingFlow({ user, setUser, setSetupComplete, setStudents, setLesso
 
   const handleComplete = () => {
     setUser({ ...user, ...data });
-
-    // Check if this is Jennaca's account - load demo data
-    if (user.email.toLowerCase().includes('jennaca') || user.name.toLowerCase().includes('jennaca') || data.businessName.toLowerCase().includes('jennaca')) {
-      console.log('Loading demo data for Jennaca...');
-      const demoData = generateDemoData();
-      setStudents(demoData.students);
-      setLessons(demoData.lessons);
-    }
-
     setSetupComplete(true);
   };
 

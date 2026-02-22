@@ -58,12 +58,12 @@ function CadenceApp() {
 
   // If no user, show auth
   if (!user) {
-    return <AuthScreen setUser={setUser} />;
+    return <AuthScreen setUser={setUser} setStudents={setStudents} setLessons={setLessons} setSetupComplete={setSetupComplete} />;
   }
 
   // If user but setup not complete, show onboarding
   if (!setupComplete) {
-    return <OnboardingFlow user={user} setUser={setUser} setSetupComplete={setSetupComplete} setStudents={setStudents} setLessons={setLessons} />;
+    return <OnboardingFlow user={user} setUser={setUser} setSetupComplete={setSetupComplete} />;
   }
 
   // Main app

@@ -4,23 +4,55 @@
  * Presents a toggle between Login and Sign Up forms, collects
  * the user's name (sign-up only), email, and password, then
  * creates a user object and passes it up via the setUser callback.
+ *
+ * Demo account: cadence.demo@mail.com / demome123
+ * Bypasses onboarding and loads a fully populated studio.
  */
 
 import { useState } from 'react';
 import { Music } from '@/components/icons';
+import { generateDemoData } from '@/utils/demoData';
 
-function AuthScreen({ setUser }) {
+function AuthScreen({ setUser, setStudents, setLessons, setSetupComplete }) {
   const [isLogin, setIsLogin] = useState(false); // Default to signup
   const [formData, setFormData] = useState({ email: '', password: '', name: '' });
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // Demo account — bypass onboarding, load full dataset
+    if (
+      formData.email.toLowerCase().trim() === 'cadence.demo@mail.com' &&
+      formData.password === 'demome123'
+    ) {
+      const demoData = generateDemoData();
+
+      // Write billing data directly to localStorage
+      // (BillingView reads from localStorage on first mount via useLocalStorage hook)
+      window.localStorage.setItem('cadence_invoices', JSON.stringify(demoData.invoices));
+      window.localStorage.setItem('cadence_payments', JSON.stringify(demoData.payments));
+      window.localStorage.setItem('cadence_billing_settings', JSON.stringify(demoData.billingSettings));
+
+      // Set React state for data that App.jsx manages
+      setStudents(demoData.students);
+      setLessons(demoData.lessons);
+      setSetupComplete(true);
+      setUser(demoData.user);
+      return;
+    }
+
+    // Normal login/signup flow
     const newUser = {
       id: Date.now(),
       email: formData.email,
       name: formData.name || formData.email.split('@')[0],
     };
     setUser(newUser);
+  };
+
+  const fillDemoCredentials = () => {
+    setIsLogin(true);
+    setFormData({ email: 'cadence.demo@mail.com', password: 'demome123', name: '' });
   };
 
   return (
@@ -88,6 +120,17 @@ function AuthScreen({ setUser }) {
               {isLogin ? 'Login' : 'Create Account'}
             </button>
           </form>
+
+          <p className="text-center mt-4 text-sm text-stone-500">
+            Want to try it out?{' '}
+            <button
+              type="button"
+              onClick={fillDemoCredentials}
+              className="text-teal-700 hover:text-teal-600 font-medium"
+            >
+              Use demo account
+            </button>
+          </p>
         </div>
       </div>
     </div>
