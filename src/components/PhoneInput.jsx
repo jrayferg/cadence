@@ -100,7 +100,7 @@ export default function PhoneInput({
   return (
     <div className="min-w-0">
       {label && (
-        <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
+        <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
           {label} {required && <span className="text-red-500">*</span>}
         </label>
       )}
@@ -108,7 +108,7 @@ export default function PhoneInput({
         <select
           value={countryCode}
           onChange={handleCountrySelect}
-          className={`w-[4.5rem] flex-shrink-0 px-1.5 py-2.5 ${inputBg} border border-r-0 border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors text-sm`}
+          className={`w-[4.5rem] flex-shrink-0 px-1.5 py-2 ${inputBg} border border-r-0 border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors text-sm`}
         >
           {COUNTRIES.map((c) => (
             <option key={`${c.name}-${c.code}`} value={c.code}>
@@ -122,7 +122,7 @@ export default function PhoneInput({
           onChange={handleInput}
           placeholder={isUSFormat ? '(555) 123-4567' : 'Phone number'}
           required={required}
-          className={`flex-1 min-w-0 px-3 py-2.5 ${inputBg} border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-r-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors text-sm`}
+          className={`flex-1 min-w-0 px-3 py-2 ${inputBg} border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-r-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors text-sm`}
         />
       </div>
     </div>
