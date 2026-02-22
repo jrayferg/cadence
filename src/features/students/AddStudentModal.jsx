@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { X } from '@/components/icons';
+import PhoneInput from '@/components/PhoneInput';
 
 /**
  * AddStudentModal - Modal form for adding or editing a student.
@@ -19,6 +20,7 @@ import { X } from '@/components/icons';
         name: '',
         email: '',
         phone: '',
+        phoneCountryCode: '+1',
         dateOfBirth: '',
         profileImage: '',
         addressLine1: '',
@@ -27,13 +29,14 @@ import { X } from '@/components/icons';
         state: '',
         zipCode: '',
 
-        // Minor flag
-        isMinor: false,
+        // Minor flag — defaults to checked (most music students are minors)
+        isMinor: true,
 
         // Parent Info
         parentName: '',
         parentEmail: '',
         parentPhone: '',
+        parentPhoneCountryCode: '+1',
         parentDateOfBirth: '',
         parentAddressLine1: '',
         parentAddressLine2: '',
@@ -44,6 +47,7 @@ import { X } from '@/components/icons';
         // Emergency Contact
         emergencyContactName: '',
         emergencyContactPhone: '',
+        emergencyContactPhoneCountryCode: '+1',
 
         // Lesson Preferences
         defaultLessonType: lessonTypes[0]?.name || '',
@@ -88,31 +92,6 @@ import { X } from '@/components/icons';
                     Student Information
                   </h4>
 
-                  {/* Profile Image Preview + URL */}
-                  <div className="flex items-start gap-4">
-                    {formData.profileImage && (
-                      <img
-                        src={formData.profileImage}
-                        alt="Profile preview"
-                        className="w-20 h-20 rounded-full object-cover border-2 border-stone-200 dark:border-stone-600 flex-shrink-0"
-                        onError={(e) => e.target.style.display = 'none'}
-                      />
-                    )}
-                    <div className="flex-1">
-                      <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
-                        Profile Image URL (optional)
-                      </label>
-                      <input
-                        type="url"
-                        value={formData.profileImage}
-                        onChange={(e) => setFormData({ ...formData, profileImage: e.target.value })}
-                        placeholder="https://example.com/image.jpg"
-                        className="w-full px-4 py-3 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
-                      />
-                      <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">Enter URL to see preview above</p>
-                    </div>
-                  </div>
-
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {/* Student Name (full width) */}
                     <div className="md:col-span-3">
@@ -126,6 +105,21 @@ import { X } from '@/components/icons';
                         className="w-full px-4 py-3 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
                         required
                       />
+                    </div>
+
+                    {/* Under 18 Checkbox — compact, inline */}
+                    <div className="md:col-span-3">
+                      <label className="inline-flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={formData.isMinor}
+                          onChange={(e) => setFormData({ ...formData, isMinor: e.target.checked })}
+                          className="w-4 h-4 accent-teal-700"
+                        />
+                        <span className="text-sm text-stone-600 dark:text-stone-400">
+                          This student is under 18 (requires parent/guardian info)
+                        </span>
+                      </label>
                     </div>
 
                     {/* Student Email */}
@@ -142,18 +136,14 @@ import { X } from '@/components/icons';
                       />
                     </div>
 
-                    {/* Student Phone */}
-                    <div>
-                      <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
-                        Student Phone
-                      </label>
-                      <input
-                        type="tel"
-                        value={formData.phone}
-                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                        className="w-full px-4 py-3 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
-                      />
-                    </div>
+                    {/* Student Phone (with country selector) */}
+                    <PhoneInput
+                      label="Student Phone"
+                      value={formData.phone}
+                      onChange={(val) => setFormData({ ...formData, phone: val })}
+                      countryCode={formData.phoneCountryCode}
+                      onCountryChange={(code) => setFormData({ ...formData, phoneCountryCode: code })}
+                    />
 
                     {/* Date of Birth */}
                     <div>
@@ -166,6 +156,33 @@ import { X } from '@/components/icons';
                         onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
                         className="w-full px-4 py-3 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
                       />
+                    </div>
+
+                    {/* Profile Image Preview + URL (moved after contact fields) */}
+                    <div className="md:col-span-3">
+                      <div className="flex items-start gap-4">
+                        {formData.profileImage && (
+                          <img
+                            src={formData.profileImage}
+                            alt="Profile preview"
+                            className="w-20 h-20 rounded-full object-cover border-2 border-stone-200 dark:border-stone-600 flex-shrink-0"
+                            onError={(e) => e.target.style.display = 'none'}
+                          />
+                        )}
+                        <div className="flex-1">
+                          <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
+                            Profile Image URL (optional)
+                          </label>
+                          <input
+                            type="url"
+                            value={formData.profileImage}
+                            onChange={(e) => setFormData({ ...formData, profileImage: e.target.value })}
+                            placeholder="https://example.com/image.jpg"
+                            className="w-full px-4 py-3 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
+                          />
+                          <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">Enter URL to see preview</p>
+                        </div>
+                      </div>
                     </div>
 
                     {/* Student Address (only if 18+) */}
@@ -241,21 +258,6 @@ import { X } from '@/components/icons';
                   </div>
                 </div>
 
-                {/* Under 18 Checkbox */}
-                <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
-                  <label className="flex items-center gap-3 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={formData.isMinor}
-                      onChange={(e) => setFormData({ ...formData, isMinor: e.target.checked })}
-                      className="w-5 h-5 accent-teal-700"
-                    />
-                    <span className="font-medium text-stone-900 dark:text-stone-100">
-                      This student is under 18 (requires parent/guardian info)
-                    </span>
-                  </label>
-                </div>
-
                 {/* Parent/Guardian Information (conditional) */}
                 {formData.isMinor && (
                   <div className="space-y-4 bg-stone-50 dark:bg-stone-900/50 p-6 rounded-lg border border-stone-200 dark:border-stone-700">
@@ -293,18 +295,15 @@ import { X } from '@/components/icons';
                         <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">All emails sent to parent</p>
                       </div>
 
-                      {/* Parent Phone */}
-                      <div>
-                        <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
-                          Parent Phone
-                        </label>
-                        <input
-                          type="tel"
-                          value={formData.parentPhone}
-                          onChange={(e) => setFormData({ ...formData, parentPhone: e.target.value })}
-                          className="w-full px-4 py-3 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
-                        />
-                      </div>
+                      {/* Parent Phone (with country selector) */}
+                      <PhoneInput
+                        label="Parent Phone"
+                        value={formData.parentPhone}
+                        onChange={(val) => setFormData({ ...formData, parentPhone: val })}
+                        countryCode={formData.parentPhoneCountryCode}
+                        onCountryChange={(code) => setFormData({ ...formData, parentPhoneCountryCode: code })}
+                        inputBg="bg-white dark:bg-stone-800"
+                      />
 
                       {/* Parent Date of Birth */}
                       <div>
@@ -407,17 +406,15 @@ import { X } from '@/components/icons';
                         className="w-full px-4 py-3 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
                       />
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
-                        Emergency Contact Phone
-                      </label>
-                      <input
-                        type="tel"
-                        value={formData.emergencyContactPhone}
-                        onChange={(e) => setFormData({ ...formData, emergencyContactPhone: e.target.value })}
-                        className="w-full px-4 py-3 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
-                      />
-                    </div>
+                    {/* Emergency Contact Phone (with country selector) */}
+                    <PhoneInput
+                      label="Emergency Contact Phone"
+                      value={formData.emergencyContactPhone}
+                      onChange={(val) => setFormData({ ...formData, emergencyContactPhone: val })}
+                      countryCode={formData.emergencyContactPhoneCountryCode}
+                      onCountryChange={(code) => setFormData({ ...formData, emergencyContactPhoneCountryCode: code })}
+                      inputBg="bg-white dark:bg-stone-800"
+                    />
                   </div>
                   <p className="mt-2 text-xs text-stone-500 dark:text-stone-400">Person to contact if parent/guardian is unavailable</p>
                 </div>
