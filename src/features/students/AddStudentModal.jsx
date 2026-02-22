@@ -565,7 +565,7 @@ function AddStudentModal({ student, onClose, onSave, lessonTypes }) {
                   <select
                     value={formData.emergencyContactRelationship}
                     onChange={(e) => setFormData({ ...formData, emergencyContactRelationship: e.target.value })}
-                    className="w-full px-3 py-2 text-sm bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors text-sm"
+                    className="w-full px-3 py-[7px] leading-5 text-sm bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
                   >
                     <option value="">Select...</option>
                     <option value="parent">Parent</option>
@@ -603,7 +603,7 @@ function AddStudentModal({ student, onClose, onSave, lessonTypes }) {
                   <select
                     value={formData.defaultLessonType}
                     onChange={(e) => setFormData({ ...formData, defaultLessonType: e.target.value })}
-                    className="w-full px-3 py-2 text-sm bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
+                    className="w-full px-3 py-[7px] leading-5 text-sm bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
                   >
                     {lessonTypes.map(type => (
                       <option key={type.name} value={type.name}>
@@ -644,7 +644,7 @@ function AddStudentModal({ student, onClose, onSave, lessonTypes }) {
                   <select
                     value={formData.billingModel || 'per-lesson'}
                     onChange={(e) => setFormData({ ...formData, billingModel: e.target.value })}
-                    className="w-full px-3 py-2 text-sm bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
+                    className="w-full px-3 py-[7px] leading-5 text-sm bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
                   >
                     <option value="per-lesson">Per Lesson — charge based on number of lessons</option>
                     <option value="monthly">Monthly — flat monthly fee</option>

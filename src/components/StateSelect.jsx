@@ -87,7 +87,7 @@ export default function StateSelect({
         onChange={(e) => onChange(e.target.value)}
         required={required}
         disabled={disabled}
-        className={`w-full px-3 py-2 ${disabled ? 'bg-stone-100 dark:bg-stone-700 cursor-not-allowed' : inputBg} border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors text-sm`}
+        className={`w-full px-3 py-[7px] leading-5 ${disabled ? 'bg-stone-100 dark:bg-stone-700 cursor-not-allowed' : inputBg} border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors text-sm`}
       >
         <option value="">Select...</option>
         {US_STATES.map(s => (
