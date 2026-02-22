@@ -2,7 +2,7 @@
  * PhoneInput - Reusable phone input with country selector and auto-formatting.
  *
  * Features:
- * - Country code dropdown (US, CA, UK, AU, MX, IN, Other)
+ * - Country code dropdown with flag + dial code
  * - US/CA numbers auto-format as (XXX) XXX-XXXX
  * - Stores formatted value with country code: "+1 (214) 555-0101"
  * - Non-US/CA countries show raw digits after country code
@@ -108,7 +108,7 @@ export default function PhoneInput({
         <select
           value={countryCode}
           onChange={handleCountrySelect}
-          className={`w-20 flex-shrink-0 px-1.5 py-3 ${inputBg} border border-r-0 border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors text-xs`}
+          className={`w-[4.5rem] flex-shrink-0 px-1.5 py-2.5 ${inputBg} border border-r-0 border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors text-sm`}
         >
           {COUNTRIES.map((c) => (
             <option key={`${c.name}-${c.code}`} value={c.code}>
@@ -122,7 +122,7 @@ export default function PhoneInput({
           onChange={handleInput}
           placeholder={isUSFormat ? '(555) 123-4567' : 'Phone number'}
           required={required}
-          className={`flex-1 min-w-0 px-3 py-3 ${inputBg} border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-r-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors`}
+          className={`flex-1 min-w-0 px-3 py-2.5 ${inputBg} border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-r-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors text-sm`}
         />
       </div>
     </div>

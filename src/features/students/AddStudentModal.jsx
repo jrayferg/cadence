@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { X } from '@/components/icons';
 import PhoneInput from '@/components/PhoneInput';
+import DateInput from '@/components/DateInput';
 
 /**
  * AddStudentModal - Modal form for adding or editing a student.
@@ -60,6 +61,7 @@ function AddStudentModal({ student, onClose, onSave, lessonTypes }) {
 
     // Emergency Contact
     emergencyContactName: '',
+    emergencyContactRelationship: '',
     emergencyContactPhone: '',
     emergencyContactPhoneCountryCode: '+1',
 
@@ -135,7 +137,7 @@ function AddStudentModal({ student, onClose, onSave, lessonTypes }) {
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-4 py-3 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
+                  className="w-full px-4 py-2.5 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
                   required
                 />
               </div>
@@ -166,7 +168,7 @@ function AddStudentModal({ student, onClose, onSave, lessonTypes }) {
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full px-4 py-3 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
+                    className="w-full px-4 py-2.5 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
                     required={!formData.isMinor}
                   />
                 </div>
@@ -181,17 +183,11 @@ function AddStudentModal({ student, onClose, onSave, lessonTypes }) {
                 />
 
                 {/* Date of Birth */}
-                <div>
-                  <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
-                    Date of Birth
-                  </label>
-                  <input
-                    type="date"
-                    value={formData.dateOfBirth}
-                    onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
-                    className="w-full px-4 py-3 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
-                  />
-                </div>
+                <DateInput
+                  label="Date of Birth"
+                  value={formData.dateOfBirth}
+                  onChange={(val) => setFormData({ ...formData, dateOfBirth: val })}
+                />
               </div>
 
               {/* Profile Image Preview + URL */}
@@ -213,7 +209,7 @@ function AddStudentModal({ student, onClose, onSave, lessonTypes }) {
                     value={formData.profileImage}
                     onChange={(e) => setFormData({ ...formData, profileImage: e.target.value })}
                     placeholder="https://example.com/image.jpg"
-                    className="w-full px-4 py-3 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
+                    className="w-full px-4 py-2.5 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
                   />
                   <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">Enter URL to see preview</p>
                 </div>
@@ -231,7 +227,7 @@ function AddStudentModal({ student, onClose, onSave, lessonTypes }) {
                       value={formData.addressLine1}
                       onChange={(e) => setFormData({ ...formData, addressLine1: e.target.value })}
                       placeholder="123 Main Street"
-                      className="w-full px-4 py-3 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
+                      className="w-full px-4 py-2.5 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
                     />
                   </div>
 
@@ -244,7 +240,7 @@ function AddStudentModal({ student, onClose, onSave, lessonTypes }) {
                       value={formData.addressLine2}
                       onChange={(e) => setFormData({ ...formData, addressLine2: e.target.value })}
                       placeholder="Apt, Suite, Unit (optional)"
-                      className="w-full px-4 py-3 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
+                      className="w-full px-4 py-2.5 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
                     />
                   </div>
 
@@ -254,7 +250,7 @@ function AddStudentModal({ student, onClose, onSave, lessonTypes }) {
                       type="text"
                       value={formData.city}
                       onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                      className="w-full px-4 py-3 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
+                      className="w-full px-4 py-2.5 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
                     />
                   </div>
 
@@ -266,7 +262,7 @@ function AddStudentModal({ student, onClose, onSave, lessonTypes }) {
                       onChange={(e) => setFormData({ ...formData, state: e.target.value.toUpperCase() })}
                       placeholder="TX"
                       maxLength="2"
-                      className="w-full px-4 py-3 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors uppercase"
+                      className="w-full px-4 py-2.5 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors uppercase"
                     />
                   </div>
 
@@ -278,7 +274,7 @@ function AddStudentModal({ student, onClose, onSave, lessonTypes }) {
                       onChange={(e) => setFormData({ ...formData, zipCode: e.target.value })}
                       placeholder="75189"
                       maxLength="10"
-                      className="w-full px-4 py-3 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
+                      className="w-full px-4 py-2.5 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
                     />
                   </div>
                 </div>
@@ -301,7 +297,7 @@ function AddStudentModal({ student, onClose, onSave, lessonTypes }) {
                     type="text"
                     value={formData.parentName}
                     onChange={(e) => setFormData({ ...formData, parentName: e.target.value })}
-                    className="w-full px-4 py-3 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
+                    className="w-full px-4 py-2.5 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
                     required={formData.isMinor}
                   />
                 </div>
@@ -316,7 +312,7 @@ function AddStudentModal({ student, onClose, onSave, lessonTypes }) {
                       type="email"
                       value={formData.parentEmail}
                       onChange={(e) => setFormData({ ...formData, parentEmail: e.target.value })}
-                      className="w-full px-4 py-3 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
+                      className="w-full px-4 py-2.5 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
                       required={formData.isMinor}
                     />
                     <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">All emails sent to parent</p>
@@ -331,17 +327,12 @@ function AddStudentModal({ student, onClose, onSave, lessonTypes }) {
                     inputBg="bg-white dark:bg-stone-800"
                   />
 
-                  <div>
-                    <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
-                      Parent Date of Birth
-                    </label>
-                    <input
-                      type="date"
-                      value={formData.parentDateOfBirth}
-                      onChange={(e) => setFormData({ ...formData, parentDateOfBirth: e.target.value })}
-                      className="w-full px-4 py-3 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
-                    />
-                  </div>
+                  <DateInput
+                    label="Parent Date of Birth"
+                    value={formData.parentDateOfBirth}
+                    onChange={(val) => setFormData({ ...formData, parentDateOfBirth: val })}
+                    inputBg="bg-white dark:bg-stone-800"
+                  />
                 </div>
 
                 {/* Parent Address */}
@@ -353,7 +344,7 @@ function AddStudentModal({ student, onClose, onSave, lessonTypes }) {
                       value={formData.parentAddressLine1}
                       onChange={(e) => setFormData({ ...formData, parentAddressLine1: e.target.value })}
                       placeholder="123 Main Street"
-                      className="w-full px-4 py-3 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
+                      className="w-full px-4 py-2.5 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
                     />
                   </div>
 
@@ -364,7 +355,7 @@ function AddStudentModal({ student, onClose, onSave, lessonTypes }) {
                       value={formData.parentAddressLine2}
                       onChange={(e) => setFormData({ ...formData, parentAddressLine2: e.target.value })}
                       placeholder="Apt, Suite, Unit (optional)"
-                      className="w-full px-4 py-3 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
+                      className="w-full px-4 py-2.5 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
                     />
                   </div>
 
@@ -374,7 +365,7 @@ function AddStudentModal({ student, onClose, onSave, lessonTypes }) {
                       type="text"
                       value={formData.parentCity}
                       onChange={(e) => setFormData({ ...formData, parentCity: e.target.value })}
-                      className="w-full px-4 py-3 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
+                      className="w-full px-4 py-2.5 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
                     />
                   </div>
 
@@ -386,7 +377,7 @@ function AddStudentModal({ student, onClose, onSave, lessonTypes }) {
                       onChange={(e) => setFormData({ ...formData, parentState: e.target.value.toUpperCase() })}
                       placeholder="TX"
                       maxLength="2"
-                      className="w-full px-4 py-3 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors uppercase"
+                      className="w-full px-4 py-2.5 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors uppercase"
                     />
                   </div>
 
@@ -398,7 +389,7 @@ function AddStudentModal({ student, onClose, onSave, lessonTypes }) {
                       onChange={(e) => setFormData({ ...formData, parentZipCode: e.target.value })}
                       placeholder="75189"
                       maxLength="10"
-                      className="w-full px-4 py-3 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
+                      className="w-full px-4 py-2.5 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
                     />
                   </div>
                 </div>
@@ -426,8 +417,6 @@ function AddStudentModal({ student, onClose, onSave, lessonTypes }) {
                 <h4 className="text-lg font-semibold text-stone-900 dark:text-stone-100 pb-2 border-b border-stone-200 dark:border-stone-700">
                   Secondary Parent/Guardian Information
                 </h4>
-                <p className="text-xs text-stone-500 dark:text-stone-400">All fields are optional.</p>
-
                 {/* Secondary Parent Name (full width) */}
                 <div>
                   <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
@@ -437,7 +426,7 @@ function AddStudentModal({ student, onClose, onSave, lessonTypes }) {
                     type="text"
                     value={formData.secondaryParentName}
                     onChange={(e) => setFormData({ ...formData, secondaryParentName: e.target.value })}
-                    className="w-full px-4 py-3 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
+                    className="w-full px-4 py-2.5 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
                   />
                 </div>
 
@@ -451,7 +440,7 @@ function AddStudentModal({ student, onClose, onSave, lessonTypes }) {
                       type="email"
                       value={formData.secondaryParentEmail}
                       onChange={(e) => setFormData({ ...formData, secondaryParentEmail: e.target.value })}
-                      className="w-full px-4 py-3 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
+                      className="w-full px-4 py-2.5 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
                     />
                   </div>
 
@@ -464,17 +453,12 @@ function AddStudentModal({ student, onClose, onSave, lessonTypes }) {
                     inputBg="bg-white dark:bg-stone-800"
                   />
 
-                  <div>
-                    <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
-                      Date of Birth
-                    </label>
-                    <input
-                      type="date"
-                      value={formData.secondaryParentDateOfBirth}
-                      onChange={(e) => setFormData({ ...formData, secondaryParentDateOfBirth: e.target.value })}
-                      className="w-full px-4 py-3 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
-                    />
-                  </div>
+                  <DateInput
+                    label="Date of Birth"
+                    value={formData.secondaryParentDateOfBirth}
+                    onChange={(val) => setFormData({ ...formData, secondaryParentDateOfBirth: val })}
+                    inputBg="bg-white dark:bg-stone-800"
+                  />
                 </div>
 
                 {/* Same as Primary checkbox */}
@@ -502,7 +486,7 @@ function AddStudentModal({ student, onClose, onSave, lessonTypes }) {
                       onChange={(e) => setFormData({ ...formData, secondaryParentAddressLine1: e.target.value })}
                       placeholder="123 Main Street"
                       disabled={formData.secondaryParentSameAddress}
-                      className={`w-full px-4 py-3 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors ${
+                      className={`w-full px-4 py-2.5 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors ${
                         formData.secondaryParentSameAddress
                           ? 'bg-stone-100 dark:bg-stone-700 cursor-not-allowed'
                           : 'bg-white dark:bg-stone-800'
@@ -518,7 +502,7 @@ function AddStudentModal({ student, onClose, onSave, lessonTypes }) {
                       onChange={(e) => setFormData({ ...formData, secondaryParentAddressLine2: e.target.value })}
                       placeholder="Apt, Suite, Unit (optional)"
                       disabled={formData.secondaryParentSameAddress}
-                      className={`w-full px-4 py-3 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors ${
+                      className={`w-full px-4 py-2.5 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors ${
                         formData.secondaryParentSameAddress
                           ? 'bg-stone-100 dark:bg-stone-700 cursor-not-allowed'
                           : 'bg-white dark:bg-stone-800'
@@ -533,7 +517,7 @@ function AddStudentModal({ student, onClose, onSave, lessonTypes }) {
                       value={formData.secondaryParentSameAddress ? formData.parentCity : formData.secondaryParentCity}
                       onChange={(e) => setFormData({ ...formData, secondaryParentCity: e.target.value })}
                       disabled={formData.secondaryParentSameAddress}
-                      className={`w-full px-4 py-3 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors ${
+                      className={`w-full px-4 py-2.5 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors ${
                         formData.secondaryParentSameAddress
                           ? 'bg-stone-100 dark:bg-stone-700 cursor-not-allowed'
                           : 'bg-white dark:bg-stone-800'
@@ -550,7 +534,7 @@ function AddStudentModal({ student, onClose, onSave, lessonTypes }) {
                       placeholder="TX"
                       maxLength="2"
                       disabled={formData.secondaryParentSameAddress}
-                      className={`w-full px-4 py-3 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors uppercase ${
+                      className={`w-full px-4 py-2.5 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors uppercase ${
                         formData.secondaryParentSameAddress
                           ? 'bg-stone-100 dark:bg-stone-700 cursor-not-allowed'
                           : 'bg-white dark:bg-stone-800'
@@ -567,7 +551,7 @@ function AddStudentModal({ student, onClose, onSave, lessonTypes }) {
                       placeholder="75189"
                       maxLength="10"
                       disabled={formData.secondaryParentSameAddress}
-                      className={`w-full px-4 py-3 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors ${
+                      className={`w-full px-4 py-2.5 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors ${
                         formData.secondaryParentSameAddress
                           ? 'bg-stone-100 dark:bg-stone-700 cursor-not-allowed'
                           : 'bg-white dark:bg-stone-800'
@@ -583,7 +567,7 @@ function AddStudentModal({ student, onClose, onSave, lessonTypes }) {
               <h4 className="text-lg font-semibold text-stone-900 dark:text-stone-100 pb-2 border-b border-red-200 dark:border-red-800 mb-4">
                 Emergency Contact
               </h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
                     Emergency Contact Name
@@ -593,8 +577,27 @@ function AddStudentModal({ student, onClose, onSave, lessonTypes }) {
                     value={formData.emergencyContactName}
                     onChange={(e) => setFormData({ ...formData, emergencyContactName: e.target.value })}
                     placeholder="Alternative contact person"
-                    className="w-full px-4 py-3 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
+                    className="w-full px-4 py-2.5 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
                   />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
+                    Relationship
+                  </label>
+                  <select
+                    value={formData.emergencyContactRelationship}
+                    onChange={(e) => setFormData({ ...formData, emergencyContactRelationship: e.target.value })}
+                    className="w-full px-4 py-2.5 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors text-sm"
+                  >
+                    <option value="">Select...</option>
+                    <option value="parent">Parent</option>
+                    <option value="grandparent">Grandparent</option>
+                    <option value="sibling">Sibling</option>
+                    <option value="aunt-uncle">Aunt / Uncle</option>
+                    <option value="family-friend">Family Friend</option>
+                    <option value="neighbor">Neighbor</option>
+                    <option value="other">Other</option>
+                  </select>
                 </div>
                 {/* Emergency Contact Phone (with country selector) */}
                 <PhoneInput
@@ -622,7 +625,7 @@ function AddStudentModal({ student, onClose, onSave, lessonTypes }) {
                   <select
                     value={formData.defaultLessonType}
                     onChange={(e) => setFormData({ ...formData, defaultLessonType: e.target.value })}
-                    className="w-full px-4 py-3 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
+                    className="w-full px-4 py-2.5 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
                   >
                     {lessonTypes.map(type => (
                       <option key={type.name} value={type.name}>
@@ -663,7 +666,7 @@ function AddStudentModal({ student, onClose, onSave, lessonTypes }) {
                   <select
                     value={formData.billingModel || 'per-lesson'}
                     onChange={(e) => setFormData({ ...formData, billingModel: e.target.value })}
-                    className="w-full px-4 py-3 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
+                    className="w-full px-4 py-2.5 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-600 text-stone-900 dark:text-stone-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors"
                   >
                     <option value="per-lesson">Per Lesson — charge based on number of lessons</option>
                     <option value="monthly">Monthly — flat monthly fee</option>
