@@ -1,0 +1,97 @@
+/**
+ * AuthScreen - Login and signup screen for Cadence.
+ *
+ * Presents a toggle between Login and Sign Up forms, collects
+ * the user's name (sign-up only), email, and password, then
+ * creates a user object and passes it up via the setUser callback.
+ */
+
+import { useState } from 'react';
+import { Music } from '@/components/icons';
+
+function AuthScreen({ setUser }) {
+  const [isLogin, setIsLogin] = useState(false); // Default to signup
+  const [formData, setFormData] = useState({ email: '', password: '', name: '' });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const newUser = {
+      id: Date.now(),
+      email: formData.email,
+      name: formData.name || formData.email.split('@')[0],
+    };
+    setUser(newUser);
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-teal-50 to-amber-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-md animate-slide-up">
+        <div className="text-center mb-8">
+          <div className="inline-flex w-16 h-16 bg-teal-700 rounded-2xl items-center justify-center mb-4">
+            <Music className="w-10 h-10 text-white" />
+          </div>
+          <h1 className="text-4xl font-bold text-stone-900 mb-2">Cadence</h1>
+          <p className="text-stone-600">Manage your music lessons effortlessly</p>
+        </div>
+
+        <div className="bg-white rounded-2xl p-8 shadow-lg border border-stone-200">
+          <div className="flex gap-2 mb-6">
+            <button
+              onClick={() => setIsLogin(true)}
+              className={`flex-1 py-2 rounded-lg font-medium transition-colors ${
+                isLogin ? 'bg-teal-700 text-white' : 'text-stone-600 hover:bg-stone-50'
+              }`}
+            >
+              Login
+            </button>
+            <button
+              onClick={() => setIsLogin(false)}
+              className={`flex-1 py-2 rounded-lg font-medium transition-colors ${
+                !isLogin ? 'bg-teal-700 text-white' : 'text-stone-600 hover:bg-stone-50'
+              }`}
+            >
+              Sign Up
+            </button>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {!isLogin && (
+              <input
+                type="text"
+                placeholder="Your Name"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                required
+              />
+            )}
+            <input
+              type="email"
+              placeholder="Email"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+              required
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={formData.password}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+              required
+            />
+            <button
+              type="submit"
+              className="w-full py-3 bg-teal-700 text-white font-medium rounded-lg hover:bg-teal-600 transition-colors"
+            >
+              {isLogin ? 'Login' : 'Create Account'}
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default AuthScreen;
