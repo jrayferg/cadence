@@ -12,9 +12,7 @@
  * billing settings) and passes it down to whichever tab is active.
  */
 
-import { useState, useEffect } from 'react';
-import { useLocalStorage } from '@/hooks/useLocalStorage';
-import { checkOverdueInvoices, DEFAULT_BILLING_SETTINGS } from '@/services/billingService';
+import { useState } from 'react';
 import { DollarSign } from '@/components/icons';
 
 // Tab components (will be built in Phases 2–5)
@@ -31,25 +29,9 @@ const TABS = [
   { id: 'reports', label: 'Reports' },
 ];
 
-function BillingView({ lessons, students, setStudents, user }) {
+function BillingView({ lessons, students, setStudents, user, invoices, setInvoices, payments, setPayments, billingSettings, setBillingSettings }) {
   // Which tab is active
   const [activeTab, setActiveTab] = useState('dashboard');
-
-  // Billing-specific data stored in localStorage
-  const [invoices, setInvoices] = useLocalStorage('cadence_invoices', []);
-  const [payments, setPayments] = useLocalStorage('cadence_payments', []);
-  const [billingSettings, setBillingSettings] = useLocalStorage(
-    'cadence_billing_settings',
-    DEFAULT_BILLING_SETTINGS
-  );
-
-  // On load, check for overdue invoices and update their status
-  useEffect(() => {
-    const updated = checkOverdueInvoices(invoices);
-    if (updated !== invoices) {
-      setInvoices(updated);
-    }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Props shared by all tabs
   const sharedProps = {

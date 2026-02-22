@@ -4,24 +4,32 @@ import StudentCard from '@/features/students/StudentCard';
 import StudentListView from '@/features/students/StudentListView';
 import StudentProfileView from '@/features/students/StudentProfileView';
 import AddStudentModal from '@/features/students/AddStudentModal';
+import AddLessonModal from '@/features/calendar/AddLessonModal';
+import CreateInvoiceModal from '@/features/billing/components/CreateInvoiceModal';
+import RecordPaymentModal from '@/features/billing/components/RecordPaymentModal';
 
 /**
  * StudentsView - Container component for the Students tab.
  * Manages student search, view mode toggling (cards/list), and orchestrates
  * child components: StudentCard, StudentListView, StudentProfileView, AddStudentModal.
- *
- * @param {Object} props
- * @param {Array} props.students - All students array
- * @param {Array} props.lessons - All lessons array
- * @param {Function} props.setStudents - State setter for students
- * @param {Object} props.user - Current user object (contains lessonTypes, businessName, etc.)
+ * Also wires up quick-action modals (AddLesson, CreateInvoice, RecordPayment)
+ * triggered from the StudentProfileView command center.
  */
-    function StudentsView({ students, lessons, setStudents, user }) {
+    function StudentsView({
+      students, lessons, setStudents, setLessons, user,
+      invoices, setInvoices, payments, setPayments,
+      billingSettings, setBillingSettings,
+    }) {
       const [showAddModal, setShowAddModal] = useState(false);
       const [editingStudent, setEditingStudent] = useState(null);
       const [searchQuery, setSearchQuery] = useState('');
       const [viewMode, setViewMode] = useState('cards'); // 'cards' or 'list'
-      const [viewingStudent, setViewingStudent] = useState(null); // NEW - for profile view
+      const [viewingStudent, setViewingStudent] = useState(null);
+
+      // Quick-action modal state (triggered from StudentProfileView)
+      const [schedulingForStudent, setSchedulingForStudent] = useState(null);
+      const [invoicingStudent, setInvoicingStudent] = useState(null);
+      const [recordingPaymentStudent, setRecordingPaymentStudent] = useState(null);
 
       const handleEdit = (student) => {
         setEditingStudent(student);
@@ -186,6 +194,8 @@ import AddStudentModal from '@/features/students/AddStudentModal';
             <StudentProfileView
               student={viewingStudent}
               lessons={lessons}
+              invoices={invoices}
+              payments={payments}
               onClose={() => setViewingStudent(null)}
               onEdit={(student) => {
                 setViewingStudent(null);
@@ -193,6 +203,9 @@ import AddStudentModal from '@/features/students/AddStudentModal';
                 setShowAddModal(true);
               }}
               lessonTypes={user.lessonTypes}
+              onScheduleLesson={(student) => setSchedulingForStudent(student)}
+              onCreateInvoice={(student) => setInvoicingStudent(student)}
+              onRecordPayment={(student) => setRecordingPaymentStudent(student)}
             />
           )}
 
@@ -214,6 +227,50 @@ import AddStudentModal from '@/features/students/AddStudentModal';
                 setEditingStudent(null);
               }}
               lessonTypes={user.lessonTypes}
+            />
+          )}
+
+          {/* Quick-Action: Schedule Lesson Modal */}
+          {schedulingForStudent && (
+            <AddLessonModal
+              slot={{ date: new Date().toISOString().split('T')[0], time: '15:00' }}
+              students={students}
+              lessonTypes={user.lessonTypes}
+              onClose={() => setSchedulingForStudent(null)}
+              onSave={(lessonData) => {
+                if (Array.isArray(lessonData)) {
+                  setLessons([...lessons, ...lessonData]);
+                } else {
+                  setLessons([...lessons, lessonData]);
+                }
+                setSchedulingForStudent(null);
+              }}
+              setStudents={setStudents}
+            />
+          )}
+
+          {/* Quick-Action: Create Invoice Modal */}
+          {invoicingStudent && (
+            <CreateInvoiceModal
+              students={students}
+              lessons={lessons}
+              invoices={invoices}
+              setInvoices={setInvoices}
+              billingSettings={billingSettings}
+              setBillingSettings={setBillingSettings}
+              onClose={() => setInvoicingStudent(null)}
+            />
+          )}
+
+          {/* Quick-Action: Record Payment Modal */}
+          {recordingPaymentStudent && (
+            <RecordPaymentModal
+              invoices={invoices}
+              setInvoices={setInvoices}
+              payments={payments}
+              setPayments={setPayments}
+              students={students}
+              onClose={() => setRecordingPaymentStudent(null)}
             />
           )}
         </div>

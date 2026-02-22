@@ -13,7 +13,7 @@
 
 import { useState, useEffect } from 'react';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
-import { migrateStudentBillingModels } from '@/services/billingService';
+import { migrateStudentBillingModels, checkOverdueInvoices, DEFAULT_BILLING_SETTINGS } from '@/services/billingService';
 
 // Layout components
 import Header from '@/components/layout/Header';
@@ -31,6 +31,9 @@ function CadenceApp() {
   const [setupComplete, setSetupComplete] = useLocalStorage('cadence_setup_complete', false);
   const [students, setStudents] = useLocalStorage('cadence_students', []);
   const [lessons, setLessons] = useLocalStorage('cadence_lessons', []);
+  const [invoices, setInvoices] = useLocalStorage('cadence_invoices', []);
+  const [payments, setPayments] = useLocalStorage('cadence_payments', []);
+  const [billingSettings, setBillingSettings] = useLocalStorage('cadence_billing_settings', DEFAULT_BILLING_SETTINGS);
   const [currentView, setCurrentView] = useState('calendar');
   const [darkMode, setDarkMode] = useLocalStorage('cadence_dark_mode', false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -45,6 +48,12 @@ function CadenceApp() {
   useEffect(() => {
     const migrated = migrateStudentBillingModels(students);
     if (migrated !== students) setStudents(migrated);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // On load, check for overdue invoices and update their status
+  useEffect(() => {
+    const updated = checkOverdueInvoices(invoices);
+    if (updated !== invoices) setInvoices(updated);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Apply dark mode to document
@@ -83,14 +92,19 @@ function CadenceApp() {
             />
           )}
           {currentView === 'students' && (
-            <StudentsView students={students} lessons={lessons} setStudents={setStudents} user={user} />
+            <StudentsView
+              students={students} lessons={lessons} setStudents={setStudents} setLessons={setLessons} user={user}
+              invoices={invoices} setInvoices={setInvoices}
+              payments={payments} setPayments={setPayments}
+              billingSettings={billingSettings} setBillingSettings={setBillingSettings}
+            />
           )}
           {currentView === 'billing' && (
             <BillingView
-              lessons={lessons}
-              students={students}
-              setStudents={setStudents}
-              user={user}
+              lessons={lessons} students={students} setStudents={setStudents} user={user}
+              invoices={invoices} setInvoices={setInvoices}
+              payments={payments} setPayments={setPayments}
+              billingSettings={billingSettings} setBillingSettings={setBillingSettings}
             />
           )}
         </main>
