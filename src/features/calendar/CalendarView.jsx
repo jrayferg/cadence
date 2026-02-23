@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { formatTime12Hour } from '@/utils/formatTime';
 import { generateRecurringDates } from '@/utils/recurringDates';
 import { ChevronLeft, ChevronRight, ChevronDown, Plus, X } from '@/components/icons';
@@ -10,6 +10,7 @@ import ScheduleListView from '@/features/calendar/ScheduleListView';
 import AddLessonModal from '@/features/calendar/AddLessonModal';
 import LessonDetailModal from '@/features/calendar/LessonDetailModal';
 import RescheduleModal from '@/features/calendar/RescheduleModal';
+import { detectConflicts } from '@/utils/conflictDetection';
 
 /**
  * CalendarView - The main calendar container component that orchestrates
@@ -33,7 +34,37 @@ function CalendarView({ user, students, lessons, setLessons, setStudents }) {
       const [searchQuery, setSearchQuery] = useState('');
       const [showRescheduleModal, setShowRescheduleModal] = useState(null);
       const [draggedLesson, setDraggedLesson] = useState(null);
-      const [hoveredLesson, setHoveredLesson] = useState(null);
+      const [showDragConflictConfirm, setShowDragConflictConfirm] = useState(null);
+      const [hoveredLessonId, setHoveredLessonId] = useState(null);
+      const tooltipRef = useRef(null);
+      const tooltipDataRef = useRef(null);
+      const leaveTimeoutRef = useRef(null);
+
+      const handleLessonHover = useCallback((lesson, student, e) => {
+        clearTimeout(leaveTimeoutRef.current);
+        tooltipDataRef.current = { lesson, student };
+        setHoveredLessonId(lesson.id);
+        requestAnimationFrame(() => {
+          if (tooltipRef.current) {
+            tooltipRef.current.style.left = `${e.clientX + 12}px`;
+            tooltipRef.current.style.top = `${e.clientY + 12}px`;
+          }
+        });
+      }, []);
+
+      const handleLessonHoverMove = useCallback((e) => {
+        if (tooltipRef.current) {
+          tooltipRef.current.style.left = `${e.clientX + 12}px`;
+          tooltipRef.current.style.top = `${e.clientY + 12}px`;
+        }
+      }, []);
+
+      const handleLessonHoverEnd = useCallback(() => {
+        leaveTimeoutRef.current = setTimeout(() => {
+          tooltipDataRef.current = null;
+          setHoveredLessonId(null);
+        }, 50);
+      }, []);
 
       // Keyboard shortcuts visibility - show by default on first visit
       const [showKeyboardShortcuts, setShowKeyboardShortcuts] = useState(() => {
@@ -139,8 +170,22 @@ function CalendarView({ user, students, lessons, setLessons, setStudents }) {
           time: time || draggedLesson.time
         };
 
+        const conflicts = detectConflicts(updatedLesson, lessons);
+        if (conflicts.length > 0) {
+          setShowDragConflictConfirm({ lesson: updatedLesson, conflicts });
+          setDraggedLesson(null);
+          return;
+        }
+
         setLessons(lessons.map(l => l.id === draggedLesson.id ? updatedLesson : l));
         setDraggedLesson(null);
+      };
+
+      const handleDragConflictConfirm = () => {
+        if (!showDragConflictConfirm) return;
+        const { lesson } = showDragConflictConfirm;
+        setLessons(lessons.map(l => l.id === lesson.id ? lesson : l));
+        setShowDragConflictConfirm(null);
       };
 
       // Filter lessons by search
@@ -317,8 +362,9 @@ function CalendarView({ user, students, lessons, setLessons, setStudents }) {
               onLessonClick={setSelectedLesson}
               onDragStart={handleDragStart}
               onDrop={handleDrop}
-              hoveredLesson={hoveredLesson}
-              setHoveredLesson={setHoveredLesson}
+              onLessonHover={handleLessonHover}
+              onLessonHoverMove={handleLessonHoverMove}
+              onLessonHoverEnd={handleLessonHoverEnd}
             />
           )}
           {view === 'week' && (
@@ -330,8 +376,9 @@ function CalendarView({ user, students, lessons, setLessons, setStudents }) {
               onLessonClick={setSelectedLesson}
               onDragStart={handleDragStart}
               onDrop={handleDrop}
-              hoveredLesson={hoveredLesson}
-              setHoveredLesson={setHoveredLesson}
+              onLessonHover={handleLessonHover}
+              onLessonHoverMove={handleLessonHoverMove}
+              onLessonHoverEnd={handleLessonHoverEnd}
             />
           )}
           {view === 'month' && (
@@ -367,23 +414,20 @@ function CalendarView({ user, students, lessons, setLessons, setStudents }) {
             />
           )}
 
-          {/* Hover Preview */}
-          {hoveredLesson && (
+          {/* Hover Preview — positioned via ref to avoid re-render flicker */}
+          {hoveredLessonId && tooltipDataRef.current && (
             <div
-              className="fixed z-40 bg-stone-900 text-white p-4 rounded-lg shadow-2xl max-w-xs"
-              style={{
-                left: hoveredLesson.x + 10,
-                top: hoveredLesson.y + 10,
-                pointerEvents: 'none'
-              }}
+              ref={tooltipRef}
+              className="fixed z-50 bg-stone-900 text-white p-4 rounded-lg shadow-2xl max-w-xs"
+              style={{ pointerEvents: 'none' }}
             >
-              <div className="font-bold mb-1">{hoveredLesson.student?.name}</div>
-              <div className="text-sm text-stone-300">{hoveredLesson.lesson.lessonType}</div>
-              <div className="text-sm text-stone-300">{formatTime12Hour(hoveredLesson.lesson.time)} • {hoveredLesson.lesson.duration} min</div>
-              <div className="text-sm text-stone-400 mt-1">${hoveredLesson.lesson.rate}</div>
-              {hoveredLesson.lesson.sessionNumber && (
+              <div className="font-bold mb-1">{tooltipDataRef.current.student?.name}</div>
+              <div className="text-sm text-stone-300">{tooltipDataRef.current.lesson.lessonType}</div>
+              <div className="text-sm text-stone-300">{formatTime12Hour(tooltipDataRef.current.lesson.time)} • {tooltipDataRef.current.lesson.duration} min</div>
+              <div className="text-sm text-stone-400 mt-1">${tooltipDataRef.current.lesson.rate}</div>
+              {tooltipDataRef.current.lesson.sessionNumber && (
                 <div className="text-xs text-amber-300 mt-1">
-                  Session {hoveredLesson.lesson.sessionNumber}/{hoveredLesson.lesson.totalSessions}
+                  Session {tooltipDataRef.current.lesson.sessionNumber}/{tooltipDataRef.current.lesson.totalSessions}
                 </div>
               )}
             </div>
@@ -394,6 +438,7 @@ function CalendarView({ user, students, lessons, setLessons, setStudents }) {
             <AddLessonModal
               slot={showAddLesson}
               students={students}
+              lessons={lessons}
               lessonTypes={user.lessonTypes}
               onClose={() => setShowAddLesson(null)}
               onSave={(lesson) => {
@@ -464,6 +509,47 @@ function CalendarView({ user, students, lessons, setLessons, setStudents }) {
                 setShowRescheduleModal(null);
               }}
             />
+          )}
+
+          {/* Drag Conflict Confirmation */}
+          {showDragConflictConfirm && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+              <div className="bg-white dark:bg-stone-800 rounded-xl p-6 max-w-md w-full animate-slide-up">
+                <div className="flex items-center gap-2 mb-4">
+                  <svg className="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                  </svg>
+                  <h3 className="text-lg font-bold text-stone-900 dark:text-stone-100">Scheduling Conflict</h3>
+                </div>
+                <p className="text-sm text-stone-600 dark:text-stone-400 mb-4">
+                  Moving this lesson creates an overlap with:
+                </p>
+                <div className="space-y-2 mb-6">
+                  {showDragConflictConfirm.conflicts.map(c => {
+                    const student = students.find(s => s.id === c.studentId);
+                    return (
+                      <div key={c.id} className="text-sm bg-stone-50 dark:bg-stone-700 rounded px-3 py-2">
+                        <span className="font-medium">{student?.name}</span> — {formatTime12Hour(c.time)} ({c.duration} min)
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowDragConflictConfirm(null)}
+                    className="px-4 py-2 border border-stone-300 dark:border-stone-600 text-stone-700 dark:text-stone-300 rounded-lg hover:bg-stone-50 dark:hover:bg-stone-700"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleDragConflictConfirm}
+                    className="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-500"
+                  >
+                    Move Anyway
+                  </button>
+                </div>
+              </div>
+            </div>
           )}
         </div>
       );

@@ -42,7 +42,7 @@ function Sidebar({ currentView, setCurrentView, darkMode, sidebarOpen, setSideba
   return (
     <>
       {/* Desktop sidebar */}
-      <nav className="hidden lg:block w-64 bg-white dark:bg-stone-800 border-r border-stone-200 dark:border-stone-700 min-h-screen p-6 transition-colors flex-shrink-0">
+      <nav className="hidden lg:block w-48 bg-white dark:bg-stone-800 border-r border-stone-200 dark:border-stone-700 min-h-screen p-4 transition-colors flex-shrink-0">
         {navContent}
       </nav>
 

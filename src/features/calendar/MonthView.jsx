@@ -49,12 +49,8 @@ function MonthView({ date, lessons, students, onLessonClick, user, setLessons, s
       };
 
       const handleDayClick = (day) => {
-        const dayLessons = getLessonsForDay(day);
-        if (dayLessons.length === 0) {
-          // Open schedule lesson modal with 7:00 AM default
-          const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-          setShowAddLesson({ date: dateStr, time: '07:00' });
-        }
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        setShowAddLesson({ date: dateStr, time: '07:00' });
       };
 
       return (
@@ -87,11 +83,20 @@ function MonthView({ date, lessons, students, onLessonClick, user, setLessons, s
                 >
                   {day && (
                     <>
-                      <div
-                        className={`text-xs sm:text-sm font-medium mb-1 sm:mb-2 cursor-pointer hover:text-teal-600 dark:hover:text-teal-400 ${isToday ? 'text-teal-700 dark:text-teal-400 font-bold' : 'text-stone-700 dark:text-stone-300'}`}
-                        onClick={() => handleDayClick(day)}
-                      >
-                        {day}
+                      <div className="flex items-center justify-between mb-1 sm:mb-2 group">
+                        <div
+                          className={`text-xs sm:text-sm font-medium cursor-pointer hover:text-teal-600 dark:hover:text-teal-400 ${isToday ? 'text-teal-700 dark:text-teal-400 font-bold' : 'text-stone-700 dark:text-stone-300'}`}
+                          onClick={() => handleDayClick(day)}
+                        >
+                          {day}
+                        </div>
+                        <button
+                          onClick={() => handleDayClick(day)}
+                          className="hidden sm:group-hover:flex w-5 h-5 items-center justify-center rounded-full bg-teal-100 dark:bg-teal-900/40 text-teal-700 dark:text-teal-400 hover:bg-teal-200 dark:hover:bg-teal-900/60 text-xs font-bold transition-colors"
+                          title="Schedule lesson"
+                        >
+                          +
+                        </button>
                       </div>
                       <div className="space-y-0.5 sm:space-y-1">
                         {/* On mobile: show dots; on desktop: show full lesson text */}
@@ -170,6 +175,7 @@ function MonthView({ date, lessons, students, onLessonClick, user, setLessons, s
             <AddLessonModal
               slot={showAddLesson}
               students={students}
+              lessons={lessons}
               lessonTypes={user.lessonTypes}
               onClose={() => setShowAddLesson(null)}
               onSave={(lesson) => {
