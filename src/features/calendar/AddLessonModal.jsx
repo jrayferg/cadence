@@ -3,6 +3,8 @@ import { generateRecurringDates } from '@/utils/recurringDates';
 import { Calendar, X, Plus } from '@/components/icons';
 import BillingModelBadge from '@/features/billing/components/BillingModelBadge';
 import AddStudentModal from '@/features/students/AddStudentModal';
+import { detectConflicts } from '@/utils/conflictDetection';
+import { formatTime12Hour } from '@/utils/formatTime';
 
 /**
  * AddLessonModal - A Google Calendar-style modal for scheduling new lessons.
@@ -19,7 +21,7 @@ import AddStudentModal from '@/features/students/AddStudentModal';
  * @param {Function} props.onSave - Called with the new lesson data on save
  * @param {Function} props.setStudents - State setter for students (used by AddStudentModal)
  */
-function AddLessonModal({ slot, students, lessonTypes, onClose, onSave, setStudents }) {
+function AddLessonModal({ slot, students, lessons = [], lessonTypes, onClose, onSave, setStudents }) {
       const [showAddStudent, setShowAddStudent] = useState(false);
       const [studentSearch, setStudentSearch] = useState('');
       const [showStudentDropdown, setShowStudentDropdown] = useState(false);
@@ -41,6 +43,8 @@ function AddLessonModal({ slot, students, lessonTypes, onClose, onSave, setStude
         endDate: '',
         recurringCount: 10,
       });
+      const [conflicts, setConflicts] = useState([]);
+      const [showConflictWarning, setShowConflictWarning] = useState(false);
 
       // Close student dropdown on outside click
       useEffect(() => {
@@ -115,6 +119,45 @@ function AddLessonModal({ slot, students, lessonTypes, onClose, onSave, setStude
       const handleSubmit = (e) => {
         e.preventDefault();
         if (!formData.studentId) return;
+
+        if (formData.recurring) {
+          try {
+            const dates = generateRecurringDates({
+              startDate: formData.date,
+              frequency: formData.recurringFrequency,
+              repeatDays: formData.repeatDays,
+              endType: formData.endType,
+              endDate: formData.endDate,
+              count: formData.recurringCount
+            });
+            const allConflicts = [];
+            dates.forEach(d => {
+              const lessonForDate = { ...formData, date: d };
+              const found = detectConflicts(lessonForDate, lessons);
+              allConflicts.push(...found);
+            });
+            const uniqueConflicts = [...new Map(allConflicts.map(c => [c.id, c])).values()];
+            if (uniqueConflicts.length > 0) {
+              setConflicts(uniqueConflicts);
+              setShowConflictWarning(true);
+              return;
+            }
+          } catch { /* proceed if date generation fails */ }
+        } else {
+          const found = detectConflicts(formData, lessons);
+          if (found.length > 0) {
+            setConflicts(found);
+            setShowConflictWarning(true);
+            return;
+          }
+        }
+
+        onSave(formData);
+      };
+
+      const handleForceSchedule = () => {
+        setShowConflictWarning(false);
+        setConflicts([]);
         onSave(formData);
       };
 
@@ -425,7 +468,49 @@ function AddLessonModal({ slot, students, lessonTypes, onClose, onSave, setStude
                 )}
               </div>
 
+              {/* Conflict Warning */}
+              {showConflictWarning && (
+                <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-300 dark:border-amber-700 rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <svg className="w-5 h-5 text-amber-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                    </svg>
+                    <span className="font-semibold text-amber-800 dark:text-amber-300">Scheduling Conflict</span>
+                  </div>
+                  <p className="text-sm text-amber-700 dark:text-amber-400 mb-3">
+                    This lesson overlaps with {conflicts.length} existing lesson{conflicts.length > 1 ? 's' : ''}:
+                  </p>
+                  <div className="space-y-2 mb-4 max-h-32 overflow-y-auto">
+                    {conflicts.map(conflict => {
+                      const student = students.find(s => s.id === conflict.studentId);
+                      return (
+                        <div key={conflict.id} className="text-sm bg-white dark:bg-stone-700 rounded px-3 py-2">
+                          <span className="font-medium">{student?.name}</span> — {formatTime12Hour(conflict.time)} ({conflict.duration} min)
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <div className="flex gap-3">
+                    <button
+                      type="button"
+                      onClick={() => { setShowConflictWarning(false); setConflicts([]); }}
+                      className="px-4 py-2 border border-stone-300 dark:border-stone-600 text-stone-700 dark:text-stone-300 rounded-lg hover:bg-stone-50 dark:hover:bg-stone-700"
+                    >
+                      Go Back
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleForceSchedule}
+                      className="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-500"
+                    >
+                      Schedule Anyway
+                    </button>
+                  </div>
+                </div>
+              )}
+
               {/* Actions */}
+              {!showConflictWarning && (
               <div className="flex gap-3 pt-4">
                 <button
                   type="button"
@@ -442,6 +527,7 @@ function AddLessonModal({ slot, students, lessonTypes, onClose, onSave, setStude
                   {formData.recurring ? `Schedule ${previewCount} Lesson${previewCount !== 1 ? 's' : ''}` : 'Schedule Lesson'}
                 </button>
               </div>
+              )}
             </form>
           </div>
         </div>
